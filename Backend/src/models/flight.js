@@ -46,6 +46,10 @@ const flightSchema = new mongoose.Schema(
       type: Number,
       required: true,
     }, 
+      delay: {
+      type: Number,
+      default: 0,
+    }, 
   },
   { timestamps: true }
 );
