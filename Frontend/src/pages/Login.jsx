@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Plane } from "lucide-react"; // ✅ plane background
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -26,12 +27,7 @@ const Login = () => {
         password: formData.password
       });
 
-      // ✅ Save the logged-in user info globally
       localStorage.setItem("user", JSON.stringify(res.data.user));
-
-      console.log("Login successful:", res.data);
-
-      // ✅ Navigate to home
       navigate("/home");
     } catch (error) {
       console.error("Login failed:", error.response?.data || error.message);
@@ -40,9 +36,18 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form onSubmit={handleLogin} className="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+    <div className="relative min-h-screen bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+      {/* ✅ Plane watermark in background */}
+      <Plane className="absolute text-blue-500 opacity-25 w-[30rem] h-[30rem] -right-28 top-28 blur-[1px]" />
+
+      {/* ✅ Login card */}
+      <form
+        onSubmit={handleLogin}
+        className="bg-white/90 p-8 rounded-lg shadow-lg w-full max-w-md relative z-10"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center text-black">
+          Login
+        </h2>
 
         <input
           type="email"
@@ -50,7 +55,7 @@ const Login = () => {
           placeholder="Email"
           value={formData.email}
           onChange={handleChange}
-          className="input input-bordered w-full mb-4"
+          className="border p-2 rounded w-full mb-4"
           required
         />
 
@@ -60,13 +65,13 @@ const Login = () => {
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}
-          className="input input-bordered w-full mb-6"
+          className="border p-2 rounded w-full mb-6"
           required
         />
 
         <button
           type="submit"
-          className="btn btn-primary w-full"
+          className="bg-blue-600 text-white py-2 rounded w-full hover:bg-blue-700"
         >
           Login
         </button>
