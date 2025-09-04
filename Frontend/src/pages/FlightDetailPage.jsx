@@ -1,10 +1,11 @@
 // src/pages/FlightDetailPage.jsx
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
 const FlightDetailPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const searchCriteria = location.state || {};
   const [flights, setFlights] = useState([]);
 
@@ -12,25 +13,35 @@ const FlightDetailPage = () => {
     const fetchMatchingFlights = async () => {
       try {
         const res = await axios.get("http://localhost:5001/api/flight");
-        console.log("All flights from backend:", res.data);
         const allFlights = res.data;
 
-        // Filter flights based on searchCriteria
-        const filtered = allFlights.filter(flight =>
-          flight.from.toLowerCase() === searchCriteria.from.toLowerCase() &&
-          flight.to.toLowerCase() === searchCriteria.to.toLowerCase() &&
-          flight.departure_date.slice(0, 10) === searchCriteria.departure_date &&
-          flight.arrival_date.slice(0, 10) === searchCriteria.arrival_date
+        const filtered = allFlights.filter(
+          (flight) =>
+            flight.from.toLowerCase() === searchCriteria.from.toLowerCase() &&
+            flight.to.toLowerCase() === searchCriteria.to.toLowerCase() &&
+            flight.departure_date.slice(0, 10) === searchCriteria.departure_date &&
+            flight.arrival_date.slice(0, 10) === searchCriteria.arrival_date
         );
 
         setFlights(filtered);
       } catch (error) {
-        console.error("Error fetching filtered flights:", error);
+        console.error("Error fetching flights:", error);
       }
     };
 
     fetchMatchingFlights();
   }, [searchCriteria]);
+
+  const handleBook = (flight) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      alert("Please log in to book a flight");
+      navigate("/login");
+      return;
+    }
+
+    navigate("/booking", { state: { flight } }); // ✅ Redirect to BookingPage
+  };
 
   return (
     <div className="p-6">
@@ -54,6 +65,7 @@ const FlightDetailPage = () => {
                 <th>Economy Price</th>
                 <th>Business Price</th>
                 <th>First Price</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -70,6 +82,14 @@ const FlightDetailPage = () => {
                   <td>{flight.economy_ticket_price}</td>
                   <td>{flight.business_ticket_price}</td>
                   <td>{flight.first_ticket_price}</td>
+                  <td>
+                    <button
+                      className="btn btn-primary btn-sm"
+                      onClick={() => handleBook(flight)}
+                    >
+                      Book
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
