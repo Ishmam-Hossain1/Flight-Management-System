@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ for logout redirect
 import axios from "axios";
 
 const CLASS_ORDER = ["economy", "business", "first"];
 
 const UserProfile = () => {
+  const navigate = useNavigate(); // ✅ for logout
   const [user, setUser] = useState(null);
   const [flight, setFlight] = useState(null); // passenger flight
   const [cargoFlight, setCargoFlight] = useState(null); // cargo flight
@@ -33,6 +35,13 @@ const UserProfile = () => {
       if (storedUser.cargo_plane_flight_id) fetchCargoFlightDetails(storedUser.cargo_plane_flight_id);
     }
   }, []);
+
+  // ✅ Logout function
+  const handleLogout = () => {
+    localStorage.removeItem("user"); // clear localStorage
+    setUser(null); // reset state
+    navigate("/login"); // redirect to login page
+  };
 
   // Fetch passenger flight
   const fetchFlightDetails = async (flightId) => {
@@ -153,7 +162,6 @@ const UserProfile = () => {
 
       {/* Flights side by side */}
       <div className="grid grid-cols-2 gap-4">
-        {/* Passenger Flight */}
         {isBooked && flight && (
           <div className="p-4 rounded border">
             <h3 className="text-lg font-semibold mb-2 text-black">Passenger Flight</h3>
@@ -164,7 +172,6 @@ const UserProfile = () => {
           </div>
         )}
 
-        {/* Cargo Flight */}
         {user.cargo_plane_booking_status === "Booked" && cargoFlight && (
           <div className="p-4 rounded border">
             <h3 className="text-lg font-semibold mb-2 text-black">Cargo Flight</h3>
@@ -209,6 +216,13 @@ const UserProfile = () => {
             </form>
           </>
         )}
+
+        {/* ✅ Logout button placed at the bottom */}
+        <div className="mt-4">
+          <button onClick={handleLogout} className="btn btn-error w-full text-white">
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   );
