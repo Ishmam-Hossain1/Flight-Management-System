@@ -40,7 +40,22 @@ const FlightDetailPage = () => {
       return;
     }
 
-    navigate("/booking", { state: { flight } }); // ✅ Redirect to BookingPage
+    // 🔍 Check if this flight is already booked by the user
+    const bookedFlights = JSON.parse(localStorage.getItem("bookedFlights")) || [];
+    const alreadyBooked = bookedFlights.some(
+      (f) => f.flightId === flight._id && f.userId === user._id
+    );
+
+    if (alreadyBooked) {
+      alert("A flight has been booked already!");
+      return;
+    }
+
+    // ✅ Save booking info in localStorage (temp frontend-only)
+    bookedFlights.push({ flightId: flight._id, userId: user._id });
+    localStorage.setItem("bookedFlights", JSON.stringify(bookedFlights));
+
+    navigate("/booking", { state: { flight } }); // Redirect to BookingPage
   };
 
   return (
